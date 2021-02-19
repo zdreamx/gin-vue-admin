@@ -4,11 +4,13 @@ import (
 	"gin-vue-admin/global"
 	"gin-vue-admin/initialize/internal"
 	"gin-vue-admin/model"
+	"os"
+	"time"
+
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"os"
 )
 
 //@author: SliverHorn
@@ -54,6 +56,7 @@ func MysqlTables(db *gorm.DB) {
 		model.WorkflowEndPoint{},
 		model.WorkflowMove{},
 		model.ExaWfLeave{},
+		model.Seedling{},
 	)
 	if err != nil {
 		global.GVA_LOG.Error("register table failed", zap.Any("err", err))
@@ -87,6 +90,7 @@ func GormMysql() *gorm.DB {
 		sqlDB, _ := db.DB()
 		sqlDB.SetMaxIdleConns(m.MaxIdleConns)
 		sqlDB.SetMaxOpenConns(m.MaxOpenConns)
+		sqlDB.SetConnMaxLifetime(time.Hour * 12) //连接池复用最大时间12小时 服务器设置为24小时
 		return db
 	}
 }
